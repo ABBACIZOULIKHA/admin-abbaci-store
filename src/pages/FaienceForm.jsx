@@ -141,7 +141,7 @@ const FaienceForm = () => {
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        <section className="bg-white rounded-xl border border-sand/40 shadow-sm p-6 space-y-5">
+        <section className="bg-white rounded-xl border border-sand/40 shadow-sm p-4 sm:p-6 space-y-5">
           <h2 className="font-semibold text-sm uppercase tracking-wide text-sage">Informations</h2>
 
           <div>
@@ -183,19 +183,19 @@ const FaienceForm = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-xl border border-sand/40 shadow-sm p-6 space-y-5">
+        <section className="bg-white rounded-xl border border-sand/40 shadow-sm p-4 sm:p-6 space-y-5">
           <h2 className="font-semibold text-sm uppercase tracking-wide text-sage">Classification</h2>
           <CheckGroup title="Catégories" items={categories} selected={categorieIds} onToggle={toggle(setCategorieIds)} />
           <CheckGroup title="Utilisations" items={utilisations} selected={utilisationIds} onToggle={toggle(setUtilisationIds)} />
           <CheckGroup title="Finitions" items={finitions} selected={finitionIds} onToggle={toggle(setFinitionIds)} />
         </section>
 
-        <section className="bg-white rounded-xl border border-sand/40 shadow-sm p-6 space-y-5">
+        <section className="bg-white rounded-xl border border-sand/40 shadow-sm p-4 sm:p-6 space-y-5">
           <h2 className="font-semibold text-sm uppercase tracking-wide text-sage">Photos principales</h2>
           <PhotoInput value={grandPhotos} onChange={setGrandPhotos} folder="faience/grand" />
         </section>
 
-        <section className="bg-white rounded-xl border border-sand/40 shadow-sm p-6 space-y-5">
+        <section className="bg-white rounded-xl border border-sand/40 shadow-sm p-4 sm:p-6 space-y-5">
           <h2 className="font-semibold text-sm uppercase tracking-wide text-sage">Photos unité</h2>
           <PhotoInput value={unitPhotos} onChange={setUnitPhotos} withDescription folder="faience/unite" />
         </section>
@@ -204,11 +204,11 @@ const FaienceForm = () => {
           <p className="text-sm text-clay bg-clay/10 border border-clay/30 rounded-lg px-4 py-3">{error}</p>
         )}
 
-        <div className="flex gap-4 pb-8">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pb-8">
           <button type="submit" disabled={saving} className="bg-olive text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-clay transition disabled:opacity-50">
             {saving ? "Enregistrement..." : isEdit ? "Enregistrer les modifications" : "Créer le produit"}
           </button>
-          <Link to="/faience" className="px-6 py-3 rounded-lg text-sm bg-white border border-sand/60 hover:bg-ivory transition">
+          <Link to="/faience" className="inline-flex items-center justify-center px-6 py-3 rounded-lg text-sm bg-white border border-sand/60 hover:bg-ivory transition">
             Annuler
           </Link>
         </div>

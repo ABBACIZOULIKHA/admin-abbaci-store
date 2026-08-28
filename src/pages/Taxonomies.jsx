@@ -58,7 +58,7 @@ const TaxonomySection = ({ table, title, hint }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-sand/40 shadow-sm p-6">
+    <div className="bg-white rounded-xl border border-sand/40 shadow-sm p-4 sm:p-6">
       <h2 className="font-semibold">{title}</h2>
       <p className="text-xs text-stone mt-1 mb-5">{hint}</p>
 

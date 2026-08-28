@@ -42,14 +42,14 @@ const FaienceList = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold">Faïence & Carrelage</h1>
           <p className="text-sm text-stone mt-1">{products.length} produit(s)</p>
         </div>
         <Link
           to="/faience/nouveau"
-          className="inline-flex items-center gap-2 bg-clay text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-olive transition"
+          className="inline-flex items-center justify-center gap-2 bg-clay text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-olive transition self-start sm:self-auto"
         >
           <FaPlus /> Ajouter
         </Link>
@@ -64,7 +64,7 @@ const FaienceList = () => {
       {loading ? (
         <p className="text-stone animate-pulse">Chargement...</p>
       ) : products.length === 0 ? (
-        <div className="bg-white rounded-xl border border-dashed border-stone/50 p-12 text-center text-stone">
+        <div className="bg-white rounded-xl border border-dashed border-stone/50 p-8 sm:p-12 text-center text-stone">
           Aucun produit. Cliquez sur « Ajouter » pour commencer.
         </div>
       ) : (
