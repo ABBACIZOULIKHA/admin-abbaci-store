@@ -19,6 +19,9 @@
 .env.production.local
 .env
 .env.example
+QrCode.py
+abbaci-ceramic-store.png
+admin-abbaci-store.png
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
