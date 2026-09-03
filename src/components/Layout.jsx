@@ -5,6 +5,7 @@ import {
   FaThLarge,
   FaBath,
   FaTags,
+  FaIndustry,
   FaSignOutAlt,
   FaBars,
   FaTimes,
@@ -17,6 +18,7 @@ const navItems = [
   { to: "/faience", label: "Faïence & Carrelage", icon: FaThLarge },
   { to: "/bathroom", label: "Sanitaires", icon: FaBath },
   { to: "/taxonomies", label: "Catégories & tags", icon: FaTags },
+  { to: "/producers", label: "Producteurs", icon: FaIndustry },
 ];
 
 const Layout = () => {

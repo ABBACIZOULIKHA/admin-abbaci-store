@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { getFaience, saveFaience } from "../services/faienceService";
+import { listProducers } from "../services/producerService";
 import { listTaxonomy } from "../services/taxonomyService";
 import PhotoInput from "../components/PhotoInput";
 import CreatableSelect from "../components/CreatableSelect";
@@ -52,7 +53,11 @@ const FaienceForm = () => {
     aspect: "",
     epaisseur: "",
     marque: "",
+    est_nouveau: false,
+    prix: "",
+    prix_promo: "",
   });
+  const [producerId, setProducerId] = useState("");
   const [categorieIds, setCategorieIds] = useState([]);
   const [utilisationIds, setUtilisationIds] = useState([]);
   const [finitionIds, setFinitionIds] = useState([]);
@@ -62,6 +67,7 @@ const FaienceForm = () => {
   const [categories, setCategories] = useState([]);
   const [utilisations, setUtilisations] = useState([]);
   const [finitions, setFinitions] = useState([]);
+  const [producers, setProducers] = useState([]);
 
   const [loading, setLoading] = useState(isEdit);
   const [saving, setSaving] = useState(false);
@@ -72,11 +78,13 @@ const FaienceForm = () => {
       listTaxonomy("categories"),
       listTaxonomy("utilisations"),
       listTaxonomy("finitions"),
+      listProducers(),
     ])
-      .then(([c, u, f]) => {
+      .then(([c, u, f, p]) => {
         setCategories(c);
         setUtilisations(u);
         setFinitions(f);
+        setProducers(p);
       })
       .catch((e) => setError(e.message));
   }, []);
@@ -85,8 +93,9 @@ const FaienceForm = () => {
     if (!isEdit) return;
     getFaience(id)
       .then((p) => {
-        const { nom, disponibilite, format, aspect, epaisseur, marque } = p;
-        setForm({ nom: nom || "", disponibilite: disponibilite || "En stock", format: format || "", aspect: aspect || "", epaisseur: epaisseur || "", marque: marque || "" });
+        const { nom, disponibilite, format, aspect, epaisseur, marque, est_nouveau, prix, prix_promo, producer_id } = p;
+        setForm({ nom: nom || "", disponibilite: disponibilite || "En stock", format: format || "", aspect: aspect || "", epaisseur: epaisseur || "", marque: marque || "", est_nouveau: !!est_nouveau, prix: prix ?? "", prix_promo: prix_promo ?? "" });
+        setProducerId(producer_id ?? "");
         setCategorieIds(p.categorieIds);
         setUtilisationIds(p.utilisationIds);
         setFinitionIds(p.finitionIds);
@@ -114,7 +123,18 @@ const FaienceForm = () => {
     }
     setSaving(true);
     try {
-      await saveFaience(isEdit ? id : null, form, {
+      const selectedProducer = producers.find((p) => String(p.id) === String(producerId));
+      await saveFaience(
+        isEdit ? id : null,
+        {
+          ...form,
+          marque: selectedProducer?.name || "",
+          producer_id: producerId ? Number(producerId) : null,
+          est_nouveau: !!form.est_nouveau,
+          prix: form.prix === "" ? null : Number(form.prix),
+          prix_promo: form.prix_promo === "" ? null : Number(form.prix_promo),
+        },
+        {
         categorieIds,
         utilisationIds,
         finitionIds,
@@ -178,8 +198,48 @@ const FaienceForm = () => {
           </div>
 
           <div>
-            <label className={labelCls}>Marque</label>
-            <input className={inputCls} value={form.marque} onChange={(e) => setForm({ ...form, marque: e.target.value })} placeholder="Ex : Ceramica" />
+            <label className={labelCls}>Producteur (marque)</label>
+            <select
+              className={inputCls}
+              value={producerId}
+              onChange={(e) => setProducerId(e.target.value)}
+            >
+              <option value="">— Sélectionner un producteur —</option>
+              {producers.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+            {producers.length === 0 && (
+              <p className="text-xs text-stone mt-1.5">
+                Aucun producteur. Ajoutez-en depuis la page «&nbsp;Producteurs&nbsp;».
+              </p>
+            )}
+          </div>
+        </section>
+
+        <section className="bg-white rounded-xl border border-sand/40 shadow-sm p-4 sm:p-6 space-y-5">
+          <h2 className="font-semibold text-sm uppercase tracking-wide text-sage">Prix & statut</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className={labelCls}>Prix (DA)</label>
+              <input type="number" min="0" step="0.01" className={inputCls} value={form.prix} onChange={(e) => setForm({ ...form, prix: e.target.value })} placeholder="3800" />
+            </div>
+            <div>
+              <label className={labelCls}>Prix promo (DA)</label>
+              <input type="number" min="0" step="0.01" className={inputCls} value={form.prix_promo} onChange={(e) => setForm({ ...form, prix_promo: e.target.value })} placeholder="3200" />
+            </div>
+            <div className="flex items-end">
+              <label className="flex items-center gap-2 text-sm text-stone">
+                <input
+                  type="checkbox"
+                  checked={!!form.est_nouveau}
+                  onChange={(e) => setForm({ ...form, est_nouveau: e.target.checked })}
+                  className="w-4 h-4 accent-clay"
+                />
+                Marquer comme <span className="font-semibold text-olive">Nouveau</span>
+              </label>
+            </div>
           </div>
         </section>
 

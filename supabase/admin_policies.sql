@@ -26,6 +26,10 @@ create policy "admin write" on public.photos_grand_bathroom
 create policy "admin write" on public.photos_unite_bathroom
   for all to authenticated using (true) with check (true);
 
+-- Producers
+create policy "admin write" on public.producers
+  for all to authenticated using (true) with check (true);
+
 -- Reference tables
 create policy "admin write" on public.categories
   for all to authenticated using (true) with check (true);

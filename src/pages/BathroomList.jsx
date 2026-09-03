@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaPlus, FaPen, FaTrash, FaImage } from "react-icons/fa";
 import { listBathroom, deleteBathroom } from "../services/bathroomService";
 
-const Badge = ({ value }) => {
+function Badge({ value }) {
   const v = (value || "").toLowerCase();
   const style = v.includes("stock")
     ? "bg-olive/15 text-olive border-olive/30"
@@ -13,7 +13,13 @@ const Badge = ({ value }) => {
       {value}
     </span>
   );
-};
+}
+
+const StatTag = ({ children, className = "" }) => (
+  <span className={`inline-block text-[11px] font-semibold uppercase tracking-wide px-2 py-1 rounded-full ${className}`}>
+    {children}
+  </span>
+);
 
 const BathroomList = () => {
   const [products, setProducts] = useState([]);
@@ -80,6 +86,12 @@ const BathroomList = () => {
                 ) : (
                   <FaImage className="text-3xl text-stone/50" />
                 )}
+                {(p.est_nouveau || p.prix_promo) && (
+                  <div className="absolute top-2 left-2 flex flex-col gap-1">
+                    {p.est_nouveau && <StatTag className="bg-olive text-white">Nouveau</StatTag>}
+                    {p.prix_promo && <StatTag className="bg-clay text-white">Promo</StatTag>}
+                  </div>
+                )}
               </div>
               <div className="p-5 flex-1 flex flex-col">
                 <div className="flex items-start justify-between gap-3">
@@ -87,10 +99,20 @@ const BathroomList = () => {
                   <Badge value={p.disponibilite} />
                 </div>
                 <p className="text-xs text-stone mt-2">
-                  {[p.dimensions, p.poids && `${p.poids}`, p.prix && `${p.prix} DA`]
-                    .filter(Boolean)
-                    .join(" · ") || "—"}
+                  {[p.dimensions, p.poids && `${p.poids}`].filter(Boolean).join(" · ") || "—"}
                 </p>
+                <div className="mt-3 flex items-baseline gap-2">
+                  {p.prix != null && (
+                    <span className={`font-semibold ${p.prix_promo ? "line-through text-stone/70 text-sm" : ""}`}>
+                      {Number(p.prix).toLocaleString("fr-FR")} DA
+                    </span>
+                  )}
+                  {p.prix_promo && (
+                    <span className="font-bold text-clay">
+                      {Number(p.prix_promo).toLocaleString("fr-FR")} DA
+                    </span>
+                  )}
+                </div>
                 <div className="flex gap-2 mt-4 pt-4 border-t border-sand/40">
                   <Link
                     to={`/bathroom/${p.id}/edit`}

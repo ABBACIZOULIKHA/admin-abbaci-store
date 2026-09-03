@@ -9,6 +9,7 @@ import FaienceForm from "./pages/FaienceForm";
 import BathroomList from "./pages/BathroomList";
 import BathroomForm from "./pages/BathroomForm";
 import Taxonomies from "./pages/Taxonomies";
+import Producers from "./pages/Producers";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route path="bathroom/nouveau" element={<BathroomForm />} />
             <Route path="bathroom/:id/edit" element={<BathroomForm />} />
             <Route path="taxonomies" element={<Taxonomies />} />
+            <Route path="producers" element={<Producers />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

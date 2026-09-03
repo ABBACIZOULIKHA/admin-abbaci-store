@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import { getBathroom, saveBathroom } from "../services/bathroomService";
+import { listProducers } from "../services/producerService";
 import PhotoInput from "../components/PhotoInput";
 import CreatableSelect from "../components/CreatableSelect";
 
@@ -24,7 +25,11 @@ const BathroomForm = () => {
     absorption: "",
     retrait: "",
     prix: "",
+    prix_promo: "",
+    est_nouveau: false,
   });
+  const [producerId, setProducerId] = useState("");
+  const [producers, setProducers] = useState([]);
   const [grandPhotos, setGrandPhotos] = useState([{ url: "" }]);
   const [unitPhotos, setUnitPhotos] = useState([{ url: "", description: "" }]);
 
@@ -33,10 +38,16 @@ const BathroomForm = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    listProducers()
+      .then(setProducers)
+      .catch((e) => setError(e.message));
+  }, []);
+
+  useEffect(() => {
     if (!isEdit) return;
     getBathroom(id)
       .then((p) => {
-        const { nom, disponibilite, dimensions, poids, absorption, retrait, prix } = p;
+        const { nom, disponibilite, dimensions, poids, absorption, retrait, prix, prix_promo, est_nouveau, producer_id } = p;
         setForm({
           nom: nom || "",
           disponibilite: disponibilite || "En stock",
@@ -45,7 +56,10 @@ const BathroomForm = () => {
           absorption: absorption || "",
           retrait: retrait || "",
           prix: prix ?? "",
+          prix_promo: prix_promo ?? "",
+          est_nouveau: !!est_nouveau,
         });
+        setProducerId(producer_id ?? "");
         setGrandPhotos(p.grandPhotos.length ? p.grandPhotos.map((x) => ({ url: x.url })) : [{ url: "" }]);
         setUnitPhotos(p.unitPhotos.length ? p.unitPhotos.map((x) => ({ url: x.url, description: x.description || "" })) : [{ url: "", description: "" }]);
         setLoading(false);
@@ -67,7 +81,10 @@ const BathroomForm = () => {
     try {
       await saveBathroom(isEdit ? id : null, {
         ...form,
+        producer_id: producerId ? Number(producerId) : null,
         prix: form.prix === "" ? null : Number(form.prix),
+        prix_promo: form.prix_promo === "" ? null : Number(form.prix_promo),
+        est_nouveau: !!form.est_nouveau,
       }, { grandPhotos, unitPhotos });
       navigate("/bathroom");
     } catch (e2) {
@@ -105,6 +122,25 @@ const BathroomForm = () => {
             placeholder="En stock"
           />
 
+          <div>
+            <label className={labelCls}>Producteur (marque)</label>
+            <select
+              className={inputCls}
+              value={producerId}
+              onChange={(e) => setProducerId(e.target.value)}
+            >
+              <option value="">— Sélectionner un producteur —</option>
+              {producers.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+            {producers.length === 0 && (
+              <p className="text-xs text-stone mt-1.5">
+                Aucun producteur. Ajoutez-en depuis la page «&nbsp;Producteurs&nbsp;».
+              </p>
+            )}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
               <label className={labelCls}>Dimensions</label>
@@ -125,6 +161,24 @@ const BathroomForm = () => {
             <div>
               <label className={labelCls}>Prix (DA)</label>
               <input type="number" min="0" step="0.01" className={inputCls} value={form.prix} onChange={(e) => setForm({ ...form, prix: e.target.value })} placeholder="24500" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className={labelCls}>Prix promo (DA)</label>
+              <input type="number" min="0" step="0.01" className={inputCls} value={form.prix_promo} onChange={(e) => setForm({ ...form, prix_promo: e.target.value })} placeholder="22000" />
+            </div>
+            <div className="flex items-end">
+              <label className="flex items-center gap-2 text-sm text-stone">
+                <input
+                  type="checkbox"
+                  checked={!!form.est_nouveau}
+                  onChange={(e) => setForm({ ...form, est_nouveau: e.target.checked })}
+                  className="w-4 h-4 accent-clay"
+                />
+                Marquer comme <span className="font-semibold text-olive">Nouveau</span>
+              </label>
             </div>
           </div>
         </section>
